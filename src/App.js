@@ -54,7 +54,7 @@ function App() {
     });
 
     const provider = await web3Modal.connect();
-    if (!setisWalletConnected) {
+    if (!isWalletConnected) {
       alert("No wallet found on your device");
     } else {
       const web3 = new Web3(provider);
