@@ -237,7 +237,7 @@ function App() {
     }
   }
   async function buy() {
-    if (web3Global) {
+    if (isModal) {
       // const web3 = new Web3(web3Global);
       // await Web3.givenProvider.enable();
       // const contract = new web3Global.eth.Contract(contract_abi, contract_address);
@@ -348,7 +348,7 @@ function App() {
           </a>
           <ul className="navbar-nav ms-auto mb-lg-0">
             <li className="nav-item">
-              {isWalletConnected && (
+              {/* {isWalletConnected && (
                 <button
                   type="button"
                   onClick={loadDisconnect}
@@ -356,7 +356,7 @@ function App() {
                 >
                   Disconnect
                 </button>
-              )}
+              )} */}
               <a
                 className="btn btn-blue"
                 aria-current="page"
