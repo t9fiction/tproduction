@@ -18,13 +18,46 @@ function App() {
   const [tokensToGet, settokensToGet] = useState(0);
 
   const [web3Global, setweb3global] = useState();
+  const [isModal, setIsModal] = useState(false);
+
+  const startFunction = async () => {
+    // await loadDisconnect()
+    const web3 = new Web3(speedy_nodes);
+    setweb3global(web3);
+  };
+
+  // First one time run
+  useEffect(() => {
+    startFunction();
+  }, []);
 
   useEffect(() => {
     //connect_wallet();
-    fetch_data();
-
+    if (!isModal && web3Global != "") {
+      console.log("loaded web3");
+      fetch_data();
+    }
+    // if(!isModal && web3Global === ""){
+    //   console.log("empty web3")
+    //   fetch_data();
+    // }
     //connect_wallet();
-  }, []);
+  }, [web3Global]);
+
+  const loadDisconnect = async () => {
+    // Chain Disconnect
+    // window.ethereum.on("disconnect", async (data) => {
+    window.localStorage.clear();
+    // await window.ethereum.disconnect();
+    // await window.ethereum.close();
+    // await web3Global.eth.currentProvider.disconnect();
+    await web3Global.current.clearCachedProvider();
+    setIsModal(false);
+    setweb3global("");
+    console.log("chain changed : ");
+    // });
+  };
+
   async function connect_wallet() {
     // if(Web3.givenProvider){
 
@@ -54,18 +87,21 @@ function App() {
     });
 
     const provider = await web3Modal.connect();
-    if (!isWalletConnected) {
-      alert("No wallet found on your device");
+    if (!provider) {
+      return {
+        web3LoadingErrorMessage: "Error in connecting Wallet",
+      };
     } else {
       const web3 = new Web3(provider);
+      setIsModal(true);
       const addresses = await web3.eth.getAccounts();
       const address = addresses[0];
 
-      console.log("address", address)
+      console.log("address", address);
       setisWalletConnected(true);
       setConnectBtnText("Connected");
       const contract = new web3.eth.Contract(contract_abi, contract_address);
-
+      setweb3global(web3);
       //   contract.methods.getMintedCount(address).call((err,result) => {
       //     console.log("error: "+err);
       //     if(result != null){
@@ -78,23 +114,20 @@ function App() {
           alert("Wrong Network Selected. Select Ethereum Mainnet");
         }
       });
-
-      // }else{
-      // alert("Web3 Not Found. Try refreshing if you have metamask installed.");
-      // }
     }
   }
   async function fetch_data() {
-    const web3 = new Web3(speedy_nodes);
-    setweb3global(web3);
-    const contract = new web3.eth.Contract(contract_abi, contract_address);
+    const contract = new web3Global.eth.Contract(
+      contract_abi,
+      contract_address
+    );
     //await Web3.givenProvider.enable()
 
     contract.methods.getContractEthBalance().call((err, result) => {
       console.log("error: " + err);
       if (result != null) {
         setcontractEthBalance(result);
-        calculate_progress(web3, result);
+        calculate_progress(web3Global, result);
       }
     });
 
@@ -295,6 +328,15 @@ function App() {
           </a>
           <ul className="navbar-nav ms-auto mb-lg-0">
             <li className="nav-item">
+              {/* {isWalletConnected && (
+                <button
+                  type="button"
+                  onClick={loadDisconnect}
+                  className="btn-buy d-block text-uppercase btn btn-blue"
+                >
+                  Disconnect
+                </button>
+              )} */}
               <a
                 className="btn btn-blue"
                 aria-current="page"
