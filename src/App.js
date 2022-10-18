@@ -54,16 +54,16 @@ function App() {
 
   // const loadDisconnect = async () => {
     // Chain Disconnect
-    window.ethereum.on("disconnect", async () => {
-    window.localStorage.clear();
-    // await window.ethereum.disconnect();
-    // await window.ethereum.close();
-    // await web3Global.eth.currentProvider.disconnect();
-    await web3Global.current.clearCachedProvider();
-    setIsModal(false);
-    setweb3global("");
-    console.log("chain changed : ");
-    });
+    // window.ethereum.on("disconnect", async () => {
+    // window.localStorage.clear();
+    // // await window.ethereum.disconnect();
+    // // await window.ethereum.close();
+    // // await web3Global.eth.currentProvider.disconnect();
+    // await web3Global.current.clearCachedProvider();
+    // setIsModal(false);
+    // setweb3global("");
+    // console.log("chain changed : ");
+    // });
   // };
 
   async function connect_wallet() {
