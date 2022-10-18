@@ -52,9 +52,9 @@ function App() {
     //connect_wallet();
   }, [web3Global]);
 
-  const loadDisconnect = async () => {
+  // const loadDisconnect = async () => {
     // Chain Disconnect
-    // window.ethereum.on("disconnect", async (data) => {
+    window.ethereum.on("disconnect", async () => {
     window.localStorage.clear();
     // await window.ethereum.disconnect();
     // await window.ethereum.close();
@@ -63,8 +63,8 @@ function App() {
     setIsModal(false);
     setweb3global("");
     console.log("chain changed : ");
-    // });
-  };
+    });
+  // };
 
   async function connect_wallet() {
     // if(Web3.givenProvider){
@@ -343,7 +343,7 @@ function App() {
           </a>
           <ul className="navbar-nav ms-auto mb-lg-0">
             <li className="nav-item">
-              {isWalletConnected && (
+              {/* {isWalletConnected && (
                 <button
                   type="button"
                   onClick={loadDisconnect}
@@ -351,7 +351,7 @@ function App() {
                 >
                   Disconnect
                 </button>
-              )}
+              )} */}
               <a
                 className="btn btn-blue"
                 aria-current="page"
