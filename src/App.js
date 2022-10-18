@@ -7,6 +7,7 @@ import { contract_address, contract_abi, speedy_nodes } from "./config";
 function App() {
   const [isWalletConnected, setisWalletConnected] = useState(false);
   const [connectBtnText, setConnectBtnText] = useState("Connect Wallet");
+  const [contract, setContract] = useState();
   const [contractEthBalance, setcontractEthBalance] = useState(0);
   const [contractTokenBalance, setcontractTokenBalance] = useState(0);
   const [tokenPriceInWei, settokenPriceInWei] = useState(0);
@@ -23,6 +24,11 @@ function App() {
   const startFunction = async () => {
     // await loadDisconnect()
     const web3 = new Web3(speedy_nodes);
+    const isContract = new web3.eth.Contract(
+        contract_abi,
+        contract_address
+      );
+    setContract(isContract);
     setweb3global(web3);
   };
 
@@ -35,6 +41,7 @@ function App() {
     //connect_wallet();
     if (!isModal && web3Global != "") {
       console.log("loaded web3");
+      console.log("contract : ",contract)
       fetch_data();
     }
     // if(!isModal && web3Global === ""){
@@ -100,7 +107,8 @@ function App() {
       console.log("address", address);
       setisWalletConnected(true);
       setConnectBtnText("Connected");
-      const contract = new web3.eth.Contract(contract_abi, contract_address);
+      // const contract = new web3.eth.Contract(contract_abi, contract_address);
+
       setweb3global(web3);
       //   contract.methods.getMintedCount(address).call((err,result) => {
       //     console.log("error: "+err);
@@ -117,10 +125,10 @@ function App() {
     }
   }
   async function fetch_data() {
-    const contract = new web3Global.eth.Contract(
-      contract_abi,
-      contract_address
-    );
+    // const contract = new web3Global.eth.Contract(
+    //   contract_abi,
+    //   contract_address
+    // );
     //await Web3.givenProvider.enable()
 
     contract.methods.getContractEthBalance().call((err, result) => {
@@ -218,8 +226,8 @@ function App() {
     }
   }
   async function buy() {
-    if (Web3.givenProvider) {
-      const web3 = new Web3(Web3.givenProvider);
+    if (web3Global) {
+      const web3 = new Web3(web3Global);
       await Web3.givenProvider.enable();
       const contract = new web3.eth.Contract(contract_abi, contract_address);
 
