@@ -4,7 +4,6 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import { contract_address, contract_abi, speedy_nodes } from "./config";
-import Swal from "sweetalert2";
 function App() {
   const [isWalletConnected, setisWalletConnected] = useState(false);
   const [connectBtnText, setConnectBtnText] = useState("Connect Wallet");
@@ -229,7 +228,7 @@ function App() {
     for (let i = 0; i < error_list.length; i++) {
       if (temp_error.includes(error_list[i])) {
         // set ("Transcation Failed")
-        Swal.fire(error_list[i]);
+        alert(error_list[i]);
       }
     }
   }
