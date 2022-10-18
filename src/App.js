@@ -4,6 +4,7 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import { contract_address, contract_abi, speedy_nodes } from "./config";
+import Swal from "sweetalert2";
 function App() {
   const [isWalletConnected, setisWalletConnected] = useState(false);
   const [connectBtnText, setConnectBtnText] = useState("Connect Wallet");
@@ -24,24 +25,25 @@ function App() {
   const startFunction = async () => {
     // await loadDisconnect()
     const web3 = new Web3(speedy_nodes);
-    const isContract = new web3.eth.Contract(
-        contract_abi,
-        contract_address
-      );
+    const isContract = new web3.eth.Contract(contract_abi, contract_address);
     setContract(isContract);
     setweb3global(web3);
   };
 
   // First one time run
   useEffect(() => {
-    startFunction();
+    const fun = async () => {
+      await startFunction();
+    };
+    fun();
+    console.log("contract : ", contract);
   }, []);
 
   useEffect(() => {
     //connect_wallet();
+    console.log("contract : ", contract);
     if (!isModal && web3Global != "") {
       console.log("loaded web3");
-      console.log("contract : ",contract)
       fetch_data();
     }
     // if(!isModal && web3Global === ""){
@@ -76,7 +78,8 @@ function App() {
           package: WalletConnectProvider, // required
           options: {
             infuraId:
-              "https://mainnet.infura.io/v3/3ca1583421a74069b07075f209879afb", // required
+              "3ca1583421a74069b07075f209879afb", // required
+              // "17342b0f3f344d2d96c2c89c5fddc959", // required
           },
         },
         coinbasewallet: {
@@ -84,7 +87,7 @@ function App() {
           options: {
             appName: "FlyGuyz", // Required
             infuraId:
-              "https://mainnet.infura.io/v3/3ca1583421a74069b07075f209879afb", // Required
+              "3ca1583421a74069b07075f209879afb", // Required
             rpc: "", // Optional if `infuraId` is provided; otherwise it's required
             chainId: 1, // Optional. It defaults to 1 if not provided
             darkMode: false, // Optional. Use dark theme, defaults to false
@@ -124,6 +127,7 @@ function App() {
       });
     }
   }
+
   async function fetch_data() {
     // const contract = new web3Global.eth.Contract(
     //   contract_abi,
@@ -131,6 +135,10 @@ function App() {
     // );
     //await Web3.givenProvider.enable()
 
+    console.log(
+      "contract in fetch_data : ",
+      contract.methods.getContractEthBalance()
+    );
     contract.methods.getContractEthBalance().call((err, result) => {
       console.log("error: " + err);
       if (result != null) {
@@ -221,7 +229,7 @@ function App() {
     for (let i = 0; i < error_list.length; i++) {
       if (temp_error.includes(error_list[i])) {
         // set ("Transcation Failed")
-        alert(error_list[i]);
+        Swal.fire(error_list[i]);
       }
     }
   }
@@ -336,7 +344,7 @@ function App() {
           </a>
           <ul className="navbar-nav ms-auto mb-lg-0">
             <li className="nav-item">
-              {/* {isWalletConnected && (
+              {isWalletConnected && (
                 <button
                   type="button"
                   onClick={loadDisconnect}
@@ -344,7 +352,7 @@ function App() {
                 >
                   Disconnect
                 </button>
-              )} */}
+              )}
               <a
                 className="btn btn-blue"
                 aria-current="page"
