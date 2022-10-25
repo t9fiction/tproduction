@@ -51,8 +51,8 @@ function App() {
   useEffect(() => {
     //connect_wallet();
     if (!isModal && web3Global != "" && contract) {
-      console.log("loaded web3 : ",web3Global);
-      console.log("contract loaded : ",contract)
+      // console.log("loaded web3 : ",web3Global);
+      // console.log("contract loaded : ",contract)
       fetch_data();
     }
     // if(!isModal && web3Global === ""){
