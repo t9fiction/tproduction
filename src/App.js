@@ -4,10 +4,8 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import {
-  contract_address,
   contract_updatedABI,
   contract_updatedAddress,
-  contract_abi,
   speedy_nodes,
 } from "./config";
 function App() {
@@ -146,90 +144,90 @@ function App() {
     //   contract_address
     // );
     //await Web3.givenProvider.enable()
-      
-      console.log(
-        "contract in fetch_data : ",
-        contract.methods.getContractEthBalance()
-        // .call((err, result) => {
-        //   console.log("error: " + err);
-        //   if (result != null) {
-        //     console.log("result: " + result);
-        //   }
-        // })
-        );
-        
-        contract.methods.getContractEthBalance().call((err, result) => {
-          console.log("error: " + err);
-          console.log("result: " + result);
-          if (result != null) {
-            console.log("we r inside if and that means no error")
-            setcontractEthBalance(result);
-            calculate_progress(web3Global, result);
-          }
-        });
-        
-        contract.methods.getContractTokenBalance().call((err, result) => {
-          console.log("error: " + err);
-          if (result != null) {
-            setcontractTokenBalance(result);
-          }
-        });
-        
-        contract.methods.tokenPriceInWei().call((err, result) => {
-          console.log("error: " + err);
-          if (result != null) {
-            settokenPriceInWei(result);
-          }
-        });
-        // contract.methods.get_token_count().call((err,result) => {
-          //     if(result != null){
-            //         settokenCount(result)
-            //     }
-            // })
-          }
-          const onEthValueInputHandler = (e) => {
-            let temp = parseInt(e.target.value - 0.0000135);
-            temp = temp + 1;
-            temp = temp * parseInt(tokenPriceInWei);
-            let value_in_ether = web3Global.utils.fromWei(temp.toString(), "ether");
-            
-            if (parseFloat(value_in_ether) <= 0.0000135) {
-              return;
-            }
-            console.log(value_in_ether);
-            setselectedEthValueinWei(temp);
-            setselectedEthValue(parseFloat(value_in_ether));
-            settokensToGet(parseFloat(value_in_ether) / 0.0000135);
-            //setMintValue(+e.target.value);
-          };
-          const onEthManuallyValueInputHandler = (e) => {
-            //if (+e.target.value <= 1 || +e.target.value >=limit) return;
-            
-            // let temp = parseInt((e.target.value) - 0.0000135);
-            // temp = temp + 1;
-            // temp = temp * parseInt(tokenPriceInWei);
-            // console.log(web3Global.utils.fromWei(temp.toString() , "ether"));
-            
-            setselectedEthValue(parseFloat(e.target.value));
-            settokensToGet(parseFloat(e.target.value) / 0.0000135);
-            setselectedEthValueinWei(web3Global.utils.toWei(e.target.value));
-            //setMintValue(+e.target.value);
-          };
-          async function show_error_alert(error) {
-            let temp_error = error.message.toString();
-            console.log(temp_error);
-            let error_list = [
-              "It's not time yet",
-              "Sent Amount Wrong",
-              "Max Supply Reached",
-              "You have already Claimed Free Nft.",
-              "Presale have not started yet.",
-              "Presale Ended.",
-              "You are not Whitelisted.",
-              "Sent Amount Not Enough",
-              "Max 20 Allowed.",
-              "insufficient funds",
-              "Exceeding Per Tx Limit",
+
+    console.log(
+      "contract in fetch_data : ",
+      contract.methods.getContractEthBalance()
+      // .call((err, result) => {
+      //   console.log("error: " + err);
+      //   if (result != null) {
+      //     console.log("result: " + result);
+      //   }
+      // })
+    );
+
+    contract.methods.getContractEthBalance().call((err, result) => {
+      console.log("error: " + err);
+      console.log("result: " + result);
+      if (result != null) {
+        console.log("we r inside if and that means no error");
+        setcontractEthBalance(result);
+        calculate_progress(web3Global, result);
+      }
+    });
+
+    contract.methods.getContractTokenBalance().call((err, result) => {
+      console.log("error: " + err);
+      if (result != null) {
+        setcontractTokenBalance(result);
+      }
+    });
+
+    contract.methods.tokenPriceInWei().call((err, result) => {
+      console.log("error: " + err);
+      if (result != null) {
+        settokenPriceInWei(result);
+      }
+    });
+    // contract.methods.get_token_count().call((err,result) => {
+    //     if(result != null){
+    //         settokenCount(result)
+    //     }
+    // })
+  }
+  const onEthValueInputHandler = (e) => {
+    let temp = parseInt(e.target.value - 0.0000135);
+    temp = temp + 1;
+    temp = temp * parseInt(tokenPriceInWei);
+    let value_in_ether = web3Global.utils.fromWei(temp.toString(), "ether");
+
+    if (parseFloat(value_in_ether) <= 0.0000135) {
+      return;
+    }
+    console.log(value_in_ether);
+    setselectedEthValueinWei(temp);
+    setselectedEthValue(parseFloat(value_in_ether));
+    settokensToGet(parseFloat(value_in_ether) / 0.0000135);
+    //setMintValue(+e.target.value);
+  };
+  const onEthManuallyValueInputHandler = (e) => {
+    //if (+e.target.value <= 1 || +e.target.value >=limit) return;
+
+    // let temp = parseInt((e.target.value) - 0.0000135);
+    // temp = temp + 1;
+    // temp = temp * parseInt(tokenPriceInWei);
+    // console.log(web3Global.utils.fromWei(temp.toString() , "ether"));
+
+    setselectedEthValue(parseFloat(e.target.value));
+    settokensToGet(parseFloat(e.target.value) / 0.0000135);
+    setselectedEthValueinWei(web3Global.utils.toWei(e.target.value));
+    //setMintValue(+e.target.value);
+  };
+  async function show_error_alert(error) {
+    let temp_error = error.message.toString();
+    console.log(temp_error);
+    let error_list = [
+      "It's not time yet",
+      "Sent Amount Wrong",
+      "Max Supply Reached",
+      "You have already Claimed Free Nft.",
+      "Presale have not started yet.",
+      "Presale Ended.",
+      "You are not Whitelisted.",
+      "Sent Amount Not Enough",
+      "Max 20 Allowed.",
+      "insufficient funds",
+      "Exceeding Per Tx Limit",
       "mint at least one token",
       "incorrect ether amount",
       "Presale Ended.",
