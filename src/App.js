@@ -3,7 +3,13 @@ import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
-import { contract_address, contract_abi, speedy_nodes } from "./config";
+import {
+  contract_address,
+  contract_updatedABI,
+  contract_updatedAddress,
+  contract_abi,
+  speedy_nodes,
+} from "./config";
 function App() {
   const [isWalletConnected, setisWalletConnected] = useState(false);
   const [connectBtnText, setConnectBtnText] = useState("Connect Wallet");
@@ -24,9 +30,14 @@ function App() {
   const startFunction = async () => {
     // await loadDisconnect()
     const web3 = new Web3(speedy_nodes);
-    const isContract = new web3.eth.Contract(contract_abi, contract_address);
+    const isContract = new web3.eth.Contract(
+      contract_updatedABI,
+      contract_updatedAddress
+    );
     setContract(isContract);
     setweb3global(web3);
+    // console.log(isContract);
+    // console.log(web3);
   };
 
   // First one time run
@@ -35,14 +46,13 @@ function App() {
       await startFunction();
     };
     fun();
-    console.log("contract : ", contract);
   }, []);
 
   useEffect(() => {
     //connect_wallet();
-    console.log("contract : ", contract);
-    if (!isModal && web3Global != "") {
-      console.log("loaded web3");
+    if (!isModal && web3Global != "" && contract) {
+      console.log("loaded web3 : ",web3Global);
+      console.log("contract loaded : ",contract)
       fetch_data();
     }
     // if(!isModal && web3Global === ""){
@@ -50,7 +60,7 @@ function App() {
     //   fetch_data();
     // }
     //connect_wallet();
-  }, [web3Global]);
+  }, [web3Global, contract]);
 
   const loadDisconnect = async () => {
     // Chain Disconnect
@@ -100,12 +110,21 @@ function App() {
       };
     } else {
       const web3 = new Web3(provider);
+      const isContract = new web3.eth.Contract(
+        contract_updatedABI,
+        contract_updatedAddress
+      );
+      setContract(isContract);
+      setIsModal(true);
       const addresses = await web3.eth.getAccounts();
       const address = addresses[0];
 
       console.log("address", address);
+      setisWalletConnected(true);
+      setConnectBtnText("Connected");
       // const contract = new web3.eth.Contract(contract_abi, contract_address);
 
+      setweb3global(web3);
       //   contract.methods.getMintedCount(address).call((err,result) => {
       //     console.log("error: "+err);
       //     if(result != null){
@@ -116,16 +135,6 @@ function App() {
         console.log("Network id: " + result);
         if (result !== 1) {
           alert("Wrong Network Selected. Select Ethereum Mainnet");
-        } else {
-          const isContract = new web3.eth.Contract(
-            contract_abi,
-            contract_address
-          );
-          setContract(isContract);
-          setIsModal(true);
-          setisWalletConnected(true);
-          setConnectBtnText("Connected");
-          setweb3global(web3);
         }
       });
     }
@@ -137,81 +146,90 @@ function App() {
     //   contract_address
     // );
     //await Web3.givenProvider.enable()
-
-    console.log(
-      "contract in fetch_data : ",
-      contract.methods.getContractEthBalance()
-    );
-    contract.methods.getContractEthBalance().call((err, result) => {
-      console.log("error: " + err);
-      if (result != null) {
-        setcontractEthBalance(result);
-        calculate_progress(web3Global, result);
-      }
-    });
-
-    contract.methods.getContractTokenBalance().call((err, result) => {
-      console.log("error: " + err);
-      if (result != null) {
-        setcontractTokenBalance(result);
-      }
-    });
-
-    contract.methods.tokenPriceInWei().call((err, result) => {
-      console.log("error: " + err);
-      if (result != null) {
-        settokenPriceInWei(result);
-      }
-    });
-    // contract.methods.get_token_count().call((err,result) => {
-    //     if(result != null){
-    //         settokenCount(result)
-    //     }
-    // })
-  }
-  const onEthValueInputHandler = (e) => {
-    let temp = parseInt(e.target.value - 0.0000135);
-    temp = temp + 1;
-    temp = temp * parseInt(tokenPriceInWei);
-    let value_in_ether = web3Global.utils.fromWei(temp.toString(), "ether");
-
-    if (parseFloat(value_in_ether) <= 0.0000135) {
-      return;
-    }
-    console.log(value_in_ether);
-    setselectedEthValueinWei(temp);
-    setselectedEthValue(parseFloat(value_in_ether));
-    settokensToGet(parseFloat(value_in_ether) / 0.0000135);
-    //setMintValue(+e.target.value);
-  };
-  const onEthManuallyValueInputHandler = (e) => {
-    //if (+e.target.value <= 1 || +e.target.value >=limit) return;
-
-    // let temp = parseInt((e.target.value) - 0.0000135);
-    // temp = temp + 1;
-    // temp = temp * parseInt(tokenPriceInWei);
-    // console.log(web3Global.utils.fromWei(temp.toString() , "ether"));
-
-    setselectedEthValue(parseFloat(e.target.value));
-    settokensToGet(parseFloat(e.target.value) / 0.0000135);
-    setselectedEthValueinWei(web3Global.utils.toWei(e.target.value));
-    //setMintValue(+e.target.value);
-  };
-  async function show_error_alert(error) {
-    let temp_error = error.message.toString();
-    console.log(temp_error);
-    let error_list = [
-      "It's not time yet",
-      "Sent Amount Wrong",
-      "Max Supply Reached",
-      "You have already Claimed Free Nft.",
-      "Presale have not started yet.",
-      "Presale Ended.",
-      "You are not Whitelisted.",
-      "Sent Amount Not Enough",
-      "Max 20 Allowed.",
-      "insufficient funds",
-      "Exceeding Per Tx Limit",
+      
+      console.log(
+        "contract in fetch_data : ",
+        contract.methods.getContractEthBalance()
+        // .call((err, result) => {
+        //   console.log("error: " + err);
+        //   if (result != null) {
+        //     console.log("result: " + result);
+        //   }
+        // })
+        );
+        
+        contract.methods.getContractEthBalance().call((err, result) => {
+          console.log("error: " + err);
+          console.log("result: " + result);
+          if (result != null) {
+            console.log("we r inside if and that means no error")
+            setcontractEthBalance(result);
+            calculate_progress(web3Global, result);
+          }
+        });
+        
+        contract.methods.getContractTokenBalance().call((err, result) => {
+          console.log("error: " + err);
+          if (result != null) {
+            setcontractTokenBalance(result);
+          }
+        });
+        
+        contract.methods.tokenPriceInWei().call((err, result) => {
+          console.log("error: " + err);
+          if (result != null) {
+            settokenPriceInWei(result);
+          }
+        });
+        // contract.methods.get_token_count().call((err,result) => {
+          //     if(result != null){
+            //         settokenCount(result)
+            //     }
+            // })
+          }
+          const onEthValueInputHandler = (e) => {
+            let temp = parseInt(e.target.value - 0.0000135);
+            temp = temp + 1;
+            temp = temp * parseInt(tokenPriceInWei);
+            let value_in_ether = web3Global.utils.fromWei(temp.toString(), "ether");
+            
+            if (parseFloat(value_in_ether) <= 0.0000135) {
+              return;
+            }
+            console.log(value_in_ether);
+            setselectedEthValueinWei(temp);
+            setselectedEthValue(parseFloat(value_in_ether));
+            settokensToGet(parseFloat(value_in_ether) / 0.0000135);
+            //setMintValue(+e.target.value);
+          };
+          const onEthManuallyValueInputHandler = (e) => {
+            //if (+e.target.value <= 1 || +e.target.value >=limit) return;
+            
+            // let temp = parseInt((e.target.value) - 0.0000135);
+            // temp = temp + 1;
+            // temp = temp * parseInt(tokenPriceInWei);
+            // console.log(web3Global.utils.fromWei(temp.toString() , "ether"));
+            
+            setselectedEthValue(parseFloat(e.target.value));
+            settokensToGet(parseFloat(e.target.value) / 0.0000135);
+            setselectedEthValueinWei(web3Global.utils.toWei(e.target.value));
+            //setMintValue(+e.target.value);
+          };
+          async function show_error_alert(error) {
+            let temp_error = error.message.toString();
+            console.log(temp_error);
+            let error_list = [
+              "It's not time yet",
+              "Sent Amount Wrong",
+              "Max Supply Reached",
+              "You have already Claimed Free Nft.",
+              "Presale have not started yet.",
+              "Presale Ended.",
+              "You are not Whitelisted.",
+              "Sent Amount Not Enough",
+              "Max 20 Allowed.",
+              "insufficient funds",
+              "Exceeding Per Tx Limit",
       "mint at least one token",
       "incorrect ether amount",
       "Presale Ended.",
@@ -237,7 +255,7 @@ function App() {
     }
   }
   async function buy() {
-    if (isModal) {
+    if (web3Global) {
       // const web3 = new Web3(web3Global);
       // await Web3.givenProvider.enable();
       // const contract = new web3Global.eth.Contract(contract_abi, contract_address);
@@ -444,7 +462,7 @@ function App() {
               <div className="private-sale">
                 <div className="page-header">
                   <h2 className="page-heading text-uppercase">
-                    Private round (WHITELIST OPENED)
+                    Private round FlyGuyz
                   </h2>
                 </div>
                 {/* <div class="note mb-5">
@@ -615,7 +633,7 @@ function App() {
                             <div className="col-7">
                               <div className="text-center text-primary">
                                 <p className="mb-0">1 FLYY = </p>
-                                <div className="h5">$0.02</div>
+                                <div className="h5">$0.025</div>
                                 <hr />
                                 <p className="mb-0 text-uppercase text-primary">
                                   Private round
@@ -700,7 +718,7 @@ function App() {
                                     Hard Cap:{" "}
                                   </small>
                                   <strong>
-                                    <span>$1,500,000</span>
+                                    <span>$1,875,000</span>
                                   </strong>
                                 </p>
                               </li>
@@ -745,7 +763,7 @@ function App() {
                               <li>
                                 <p>
                                   <small className="text-muted">Price: </small>
-                                  <b>1 FLYY = 0.02$</b>
+                                  <b>1 FLYY = 0.025$</b>
                                 </p>
                               </li>
                               {/* <li>
